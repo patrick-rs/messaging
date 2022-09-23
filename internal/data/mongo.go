@@ -10,6 +10,9 @@ import (
 
 const (
 	uri = "mongodb://localhost:27017"
+	database   = "messaging"
+	MESSAGES_COLLECTION = "messages"
+	BUSES_COLLECTION = "buses"
 )
 
 func NewMongoDBClient() (*mongo.Client, error) {

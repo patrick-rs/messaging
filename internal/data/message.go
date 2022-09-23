@@ -3,7 +3,6 @@ package data
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -17,20 +16,15 @@ type Message struct {
 
 type Messages []*Message
 
-func (p *Messages) ToJSON(w io.Writer) error {
+func (m *Messages) ToJSON(w io.Writer) error {
 	e := json.NewEncoder(w)
-	return e.Encode(p)
+	return e.Encode(m)
 }
 
-func (p *Messages) FromJSON(r io.Reader) error {
+func (m *Messages) FromJSON(r io.Reader) error {
 	e := json.NewDecoder(r)
-	return e.Decode(p)
+	return e.Decode(m)
 }
-
-const (
-	database   = "messaging"
-	collection = "messages"
-)
 
 type SendMessagesInput struct {
 	Client  *mongo.Client
@@ -42,13 +36,7 @@ type SendMessageOutput struct {
 }
 
 func SendMessage(ctx context.Context, in SendMessagesInput) (SendMessageOutput, error) {
-	coll := in.Client.Database(database).Collection(collection)
-	/*
-		data := make([]interface{}, len(*in.Messages))
-		for i, d := range *in.Messages {
-			data[i] = d
-		}
-	*/
+	coll := in.Client.Database(database).Collection(MESSAGES_COLLECTION)
 	res, err := coll.InsertOne(ctx, in.Message)
 	out := SendMessageOutput{}
 	if err != nil {
@@ -69,10 +57,9 @@ type ReceiveMessagesOutput struct {
 }
 
 func ReceiveMessages(ctx context.Context, in ReceiveMessagesInput) (ReceiveMessagesOutput, error) {
-	coll := in.Client.Database(database).Collection(collection)
+	coll := in.Client.Database(database).Collection(MESSAGES_COLLECTION)
 	out := ReceiveMessagesOutput{Messages: Messages{}}
 
-	fmt.Println("BUS", in.Bus)
 	query := bson.M{"bus": in.Bus}
 
 	cursor, err := coll.Find(ctx, query)
