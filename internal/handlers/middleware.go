@@ -35,3 +35,33 @@ func (m *Messages) MiddlewareMessagesValidation(next http.Handler) http.Handler 
 
 	})
 }
+
+type KeyBus struct{}
+
+func (b *Bus) MiddlewareBusesValidation(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		bus := &data.Bus{}
+		err := data.FromJSON(bus, r.Body)
+
+		if err != nil {
+			http.Error(rw, "Unable to unmarshal json", http.StatusBadRequest)
+			b.l.Printf("Error unmarshaling messages: %s\n", err)
+			return
+		}
+
+		errs := b.v.Validate(bus)
+
+		if len(errs) != 0 {
+			b.l.Printf("[ERROR] validating message: %+v\n", errs)
+			// return the validation messages as an array
+			rw.WriteHeader(http.StatusUnprocessableEntity)
+			data.ToJSON(&ValidationError{Messages: errs.Errors()}, rw)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), KeyBus{}, bus)
+		req := r.WithContext(ctx)
+		next.ServeHTTP(rw, req)
+
+	})
+}

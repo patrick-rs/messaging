@@ -13,6 +13,12 @@ type Messages struct {
 	v      *data.Validation
 }
 
+type Bus struct {
+	l      *log.Logger
+	client *mongo.Client
+	v      *data.Validation
+}
+
 // ValidationError is a collection of validation error messages
 type ValidationError struct {
 	Messages []string `json:"messages"`
@@ -20,4 +26,8 @@ type ValidationError struct {
 
 func NewMessages(l *log.Logger, c *mongo.Client, v *data.Validation) *Messages {
 	return &Messages{l: l, client: c, v: v}
+}
+
+func NewBus(l *log.Logger, c *mongo.Client, v *data.Validation) *Bus {
+	return &Bus{l: l, client: c, v: v}
 }

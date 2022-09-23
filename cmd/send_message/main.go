@@ -31,6 +31,7 @@ func main() {
 	validator := data.NewValidation()
 
 	mh := handlers.NewMessages(l, client, validator)
+	bh := handlers.NewBus(l, client, validator)
 
 	sm := mux.NewRouter()
 
@@ -40,6 +41,8 @@ func main() {
 
 	getRouter := sm.Methods(http.MethodGet).Subrouter()
 	getRouter.HandleFunc("/", mh.GetMessage)
+
+	getRouter.HandleFunc("/bus", bh.CheckIfBusExists)
 
 	s := mhttp.NewHTTPServer(sm, "9090")
 
