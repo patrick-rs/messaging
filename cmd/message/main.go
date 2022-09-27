@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"log"
-	"messaging/internal/data"
-	"messaging/internal/handlers"
+	shareddata "messaging/internal/data/shared"
+	messagehandlers "messaging/internal/handlers/message"
 	mhttp "messaging/internal/http"
 	"net/http"
 	"os"
@@ -14,24 +14,18 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type Message struct {
-	Queue   string `bson:"queue"`
-	Message string `bson:"message"`
-}
-
 func main() {
 	l := log.New(os.Stdout, "product-api", log.LstdFlags)
 
-	client, err := data.NewMongoDBClient()
+	client, err := shareddata.NewMongoDBClient()
 	if err != nil {
 		l.Printf("Error creating new mongodb client: %s", err)
 		return
 	}
 
-	validator := data.NewValidation()
+	validator := shareddata.NewValidation()
 
-	mh := handlers.NewMessages(l, client, validator)
-	bh := handlers.NewBus(l, client, validator)
+	mh := messagehandlers.NewMessages(l, client, validator)
 
 	sm := mux.NewRouter()
 
@@ -41,8 +35,6 @@ func main() {
 
 	getRouter := sm.Methods(http.MethodGet).Subrouter()
 	getRouter.HandleFunc("/", mh.GetMessage)
-
-	getRouter.HandleFunc("/bus", bh.CheckIfBusExists)
 
 	s := mhttp.NewHTTPServer(sm, "9090")
 

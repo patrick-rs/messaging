@@ -1,9 +1,10 @@
-package data
+package datamessage
 
 import (
 	"context"
 	"encoding/json"
 	"io"
+	datashared "messaging/internal/data/shared"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -36,7 +37,7 @@ type SendMessageOutput struct {
 }
 
 func SendMessage(ctx context.Context, in SendMessagesInput) (SendMessageOutput, error) {
-	coll := in.Client.Database(database).Collection(MESSAGES_COLLECTION)
+	coll := in.Client.Database(datashared.DATABASE).Collection(datashared.MESSAGES_COLLECTION)
 	res, err := coll.InsertOne(ctx, in.Message)
 	out := SendMessageOutput{}
 	if err != nil {
@@ -57,7 +58,7 @@ type ReceiveMessagesOutput struct {
 }
 
 func ReceiveMessages(ctx context.Context, in ReceiveMessagesInput) (ReceiveMessagesOutput, error) {
-	coll := in.Client.Database(database).Collection(MESSAGES_COLLECTION)
+	coll := in.Client.Database(datashared.DATABASE).Collection(datashared.MESSAGES_COLLECTION)
 	out := ReceiveMessagesOutput{Messages: Messages{}}
 
 	query := bson.M{"bus": in.Bus}

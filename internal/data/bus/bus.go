@@ -1,9 +1,10 @@
-package data
+package busdata
 
 import (
 	"context"
 	"encoding/json"
 	"io"
+	datashared "messaging/internal/data/shared"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -23,20 +24,19 @@ func (b *Bus) FromJSON(r io.Reader) error {
 	return e.Decode(b)
 }
 
-type CheckIfBusExistsInput struct {
+type GetBusInput struct {
 	Client *mongo.Client
 	Bus    *Bus
 }
 
-type CheckIfBusExistsOutput struct {
-	Bus    *Bus
-	Exists bool
+type GetBusOutput struct {
+	Bus *Bus
 }
 
-func CheckIfBusExists(ctx context.Context, in CheckIfBusExistsInput) (CheckIfBusExistsOutput, error) {
-	out := CheckIfBusExistsOutput{}
+func GetBus(ctx context.Context, in GetBusInput) (GetBusOutput, error) {
+	out := GetBusOutput{}
 
-	coll := in.Client.Database(database).Collection(BUSES_COLLECTION)
+	coll := in.Client.Database(datashared.DATABASE).Collection(datashared.BUSES_COLLECTION)
 
 	bus := Bus{}
 
@@ -46,13 +46,11 @@ func CheckIfBusExists(ctx context.Context, in CheckIfBusExistsInput) (CheckIfBus
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			out.Exists = false
 			return out, nil
 		}
 		return out, err
 	}
 
-	out.Exists = true
 	out.Bus = &bus
 
 	return out, nil

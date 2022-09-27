@@ -1,4 +1,4 @@
-package data
+package shareddata
 
 import (
 	"context"
@@ -9,10 +9,10 @@ import (
 )
 
 const (
-	uri = "mongodb://localhost:27017"
-	database   = "messaging"
+	uri                 = "mongodb://localhost:27017"
+	DATABASE            = "messaging"
 	MESSAGES_COLLECTION = "messages"
-	BUSES_COLLECTION = "buses"
+	BUSES_COLLECTION    = "buses"
 )
 
 func NewMongoDBClient() (*mongo.Client, error) {

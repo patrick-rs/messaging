@@ -1,4 +1,4 @@
-package data
+package shareddata
 
 import (
 	"encoding/json"
