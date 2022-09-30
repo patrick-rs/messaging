@@ -3,8 +3,10 @@ package messagehandlers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
+	busdata "messaging/internal/data/bus"
 	messagedata "messaging/internal/data/message"
 	shareddata "messaging/internal/data/shared"
 	sharedhandlers "messaging/internal/handlers/shared"
@@ -86,7 +88,19 @@ func (m *Messages) GetMessage(rw http.ResponseWriter, r *http.Request) {
 func (m *Messages) PostMessage(rw http.ResponseWriter, r *http.Request) {
 	msg := r.Context().Value(KeyMessages{}).(*messagedata.Message)
 
-	_, err := messagedata.SendMessage(r.Context(), messagedata.SendMessagesInput{
+	getBusOutput, err := busdata.GetBus(r.Context(), busdata.GetBusInput{
+		Client: m.client,
+		Bus: &busdata.Bus{
+			Name: msg.Bus,
+		},
+	})
+
+	if getBusOutput.Bus == nil {
+		http.Error(rw, fmt.Sprintf("Error sending message, no bus found named '%s'", msg.Bus), http.StatusBadRequest)
+		return
+	}
+
+	_, err = messagedata.SendMessage(r.Context(), messagedata.SendMessagesInput{
 		Client:  m.client,
 		Message: msg,
 	})
