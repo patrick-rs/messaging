@@ -72,10 +72,75 @@ func (b *Bus) GetBus(rw http.ResponseWriter, r *http.Request) {
 		Bus:    &bus,
 	})
 
-	resBody, err := json.Marshal(res)
 	if err != nil {
-		panic(err)
+		b.l.Printf("Error unmarshaling bus: %s\n", err)
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	resBody, err := json.Marshal(res)
+
+	if err != nil {
+		b.l.Printf("Error unmarshaling bus: %s\n", err)
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	rw.Write(resBody)
+}
+
+func (b *Bus) PostBus(rw http.ResponseWriter, r *http.Request) {
+
+	bus := busdata.Bus{}
+
+	read, _ := ioutil.ReadAll(r.Body)
+
+	err := json.Unmarshal(read, &bus)
+
+	if err != nil {
+		b.l.Printf("Error unmarshaling request body: %s\n", err)
+		http.Error(rw, "Unable to marshal request body", http.StatusBadRequest)
+		return
+	}
+
+	err = busdata.CreateBus(r.Context(), busdata.CreateBusInput{
+		Client: b.client,
+		Bus:    &bus,
+	})
+
+	if err != nil {
+		b.l.Printf("Error creating bus: %s\n", err)
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	rw.WriteHeader(200)
+}
+
+func (b *Bus) DeleteBus(rw http.ResponseWriter, r *http.Request) {
+
+	bus := busdata.Bus{}
+
+	read, _ := ioutil.ReadAll(r.Body)
+
+	err := json.Unmarshal(read, &bus)
+
+	if err != nil {
+		b.l.Printf("Error unmarshaling request body: %s\n", err)
+		http.Error(rw, "Unable to marshal request body", http.StatusBadRequest)
+		return
+	}
+
+	err = busdata.CreateBus(r.Context(), busdata.CreateBusInput{
+		Client: b.client,
+		Bus:    &bus,
+	})
+
+	if err != nil {
+		b.l.Printf("Error creating bus: %s\n", err)
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	rw.WriteHeader(200)
 }

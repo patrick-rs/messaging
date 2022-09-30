@@ -55,3 +55,30 @@ func GetBus(ctx context.Context, in GetBusInput) (GetBusOutput, error) {
 
 	return out, nil
 }
+
+type CreateBusInput struct {
+	Client *mongo.Client
+	Bus    *Bus
+}
+
+func CreateBus(ctx context.Context, in CreateBusInput) error {
+
+	coll := in.Client.Database(datashared.DATABASE).Collection(datashared.BUSES_COLLECTION)
+
+	bus := bson.D{{Key: "name", Value: in.Bus.Name}}
+
+	_, err := coll.InsertOne(context.TODO(), bus)
+
+	return err
+}
+
+func DeleteBus(ctx context.Context, in CreateBusInput) error {
+
+	coll := in.Client.Database(datashared.DATABASE).Collection(datashared.BUSES_COLLECTION)
+
+	bus := bson.D{{Key: "name", Value: in.Bus.Name}}
+
+	_, err := coll.DeleteOne(context.TODO(), bus)
+
+	return err
+}

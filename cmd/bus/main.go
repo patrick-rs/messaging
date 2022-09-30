@@ -31,6 +31,13 @@ func main() {
 	getRouter := sm.Methods(http.MethodGet).Subrouter()
 	getRouter.HandleFunc("/", bh.GetBus)
 
+	postRouter := sm.Methods(http.MethodPost).Subrouter()
+	postRouter.HandleFunc("/", bh.PostBus)
+
+	deleteRouter := sm.Methods(http.MethodDelete).Subrouter()
+	deleteRouter.HandleFunc("/", bh.DeleteBus)
+
+	getRouter.HandleFunc("/", bh.GetBus)
 	s := mhttp.NewHTTPServer(sm, "9091")
 
 	go func() {
