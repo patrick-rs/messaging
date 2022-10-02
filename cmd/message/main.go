@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-	l := log.New(os.Stdout, "product-api", log.LstdFlags)
+	l := log.New(os.Stdout, "messaging", log.LstdFlags)
 
 	client, err := shareddata.NewMongoDBClient()
 	if err != nil {
@@ -30,13 +30,13 @@ func main() {
 	sm := mux.NewRouter()
 
 	postRouter := sm.Methods(http.MethodPost).Subrouter()
-	postRouter.HandleFunc("/", mh.PostMessage)
+	postRouter.HandleFunc("/message", mh.PostMessage)
 	postRouter.Use(mh.MiddlewareMessagesValidation)
 
 	getRouter := sm.Methods(http.MethodGet).Subrouter()
-	getRouter.HandleFunc("/", mh.GetMessage)
+	getRouter.HandleFunc("/message", mh.GetMessage)
 
-	s := mhttp.NewHTTPServer(sm, "9090")
+	s := mhttp.NewHTTPServer(sm, "1041")
 
 	go func() {
 		err := s.ListenAndServe()

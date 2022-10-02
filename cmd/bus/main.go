@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-	l := log.New(os.Stdout, "product-api", log.LstdFlags)
+	l := log.New(os.Stdout, "messaging", log.LstdFlags)
 
 	client, err := shareddata.NewMongoDBClient()
 	if err != nil {
@@ -29,16 +29,16 @@ func main() {
 	bh := bushandlers.NewBus(l, client, validator)
 
 	getRouter := sm.Methods(http.MethodGet).Subrouter()
-	getRouter.HandleFunc("/", bh.GetBus)
+	getRouter.HandleFunc("/bus", bh.GetBus)
 
 	postRouter := sm.Methods(http.MethodPost).Subrouter()
-	postRouter.HandleFunc("/", bh.PostBus)
+	postRouter.HandleFunc("/bus", bh.PostBus)
 
 	deleteRouter := sm.Methods(http.MethodDelete).Subrouter()
-	deleteRouter.HandleFunc("/", bh.DeleteBus)
+	deleteRouter.HandleFunc("/bus", bh.DeleteBus)
 
-	getRouter.HandleFunc("/", bh.GetBus)
-	s := mhttp.NewHTTPServer(sm, "9091")
+	getRouter.HandleFunc("/bus", bh.GetBus)
+	s := mhttp.NewHTTPServer(sm, "1042")
 
 	go func() {
 		err := s.ListenAndServe()
