@@ -1,0 +1,13 @@
+# build stage
+FROM golang:alpine AS build-env
+RUN apk --no-cache update
+RUN apk --no-cache upgrade
+RUN apk --no-cache add build-base git mercurial gcc
+ADD . /src
+RUN cd /src && go build -o main ./cmd/router
+
+FROM alpine
+WORKDIR /app
+COPY --from=build-env /src/main /app/
+EXPOSE 1041 1041
+ENTRYPOINT ./main
