@@ -9,5 +9,4 @@ RUN cd /src && go build -o main ./cmd/router
 FROM alpine
 WORKDIR /app
 COPY --from=build-env /src/main /app/
-EXPOSE 1040 1040
 ENTRYPOINT ./main

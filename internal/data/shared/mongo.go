@@ -2,6 +2,8 @@ package shareddata
 
 import (
 	"context"
+	"fmt"
+	"os"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -15,7 +17,8 @@ const (
 )
 
 func NewMongoDBClient() (*mongo.Client, error) {
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI("mongodb://db:27017/"))
+	uri := fmt.Sprintf("mongodb://db:%s/", os.Getenv("DB_PORT"))
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
 	if err != nil {
 		return nil, err
 	}

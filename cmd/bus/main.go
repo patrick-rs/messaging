@@ -38,7 +38,7 @@ func main() {
 	deleteRouter.HandleFunc("/bus", bh.DeleteBus)
 
 	getRouter.HandleFunc("/bus", bh.GetBus)
-	s := mhttp.NewHTTPServer(sm, "1042")
+	s := mhttp.NewHTTPServer(sm, os.Getenv("APP_PORT"))
 
 	go func() {
 		err := s.ListenAndServe()

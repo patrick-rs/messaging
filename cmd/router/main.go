@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	routerhandlers "messaging/internal/handlers/router"
 	"net/http"
@@ -14,7 +15,7 @@ func main() {
 	rh := routerhandlers.NewRouter(l)
 	http.HandleFunc("/", rh.ReverseProxy)
 
-	if err := http.ListenAndServe(":1040", nil); err != nil {
+	if err := http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("APP_PORT")), nil); err != nil {
 		panic(err)
 	}
 

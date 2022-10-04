@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"os"
 )
 
 type Router struct {
@@ -19,21 +20,22 @@ func NewRouter(l *log.Logger) *Router {
 }
 
 func (m *Router) ReverseProxy(rw http.ResponseWriter, r *http.Request) {
-	port := 0
+	port := ""
 	host := ""
 	switch r.URL.Path {
 	case "/message":
-		port = 1041
+		port = os.Getenv("MESSAGE_PORT")
 		host = "message"
 	case "/bus":
+		port = os.Getenv("BUS_PORT")
 		host = "bus"
-		port = 1042
 	}
 
-	target, err := url.Parse(fmt.Sprintf("http://%s:%d", host, port))
+	fmt.Println("MESSAGE_PORT", host, port)
+	target, err := url.Parse(fmt.Sprintf("http://%s:%s", host, port))
 
 	if err != nil {
-		m.l.Printf("Error parsing url, port: %d\n", port)
+		m.l.Printf("Error parsing url, host: %s, port: %s\n", host, port)
 		rw.WriteHeader(http.StatusInternalServerError)
 		return
 	}

@@ -9,5 +9,4 @@ RUN cd /src && go build -o main ./cmd/bus
 FROM alpine
 WORKDIR /app
 COPY --from=build-env /src/main /app/
-EXPOSE 1042 1042
 ENTRYPOINT ./main

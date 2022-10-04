@@ -5,7 +5,7 @@ services:
     image: mongo
     restart: always
     ports:
-      - "27017:27017"
+      - "${DB_PORT}:27017"
     networks:
       - fullstack
 
@@ -14,9 +14,12 @@ services:
     build:
       dockerfile: ./docker/bus/Dockerfile
     ports:
-      - "1042:1042"
+      - "${BUS_PORT}:${BUS_PORT}"
     depends_on:
       - db
+    environment:
+      DB_PORT: ${DB_PORT}
+      APP_PORT: ${BUS_PORT}
     networks:
       - fullstack
 
@@ -25,9 +28,12 @@ services:
     build:
       dockerfile: ./docker/message/Dockerfile
     ports:
-      - "1041:1041"
+      - "${MESSAGE_PORT}:${MESSAGE_PORT}"
     depends_on:
       - db
+    environment:
+      DB_PORT: ${DB_PORT}
+      APP_PORT: ${MESSAGE_PORT}
     networks:
       - fullstack
 
@@ -36,10 +42,14 @@ services:
     build:
       dockerfile: ./docker/router/Dockerfile
     ports:
-      - "1040:1040"
+      - "${ROUTER_PORT}:${ROUTER_PORT}"
     depends_on:
       - message
       - bus
+    environment:
+      APP_PORT: ${ROUTER_PORT}
+      MESSAGE_PORT: ${MESSAGE_PORT}
+      BUS_PORT: ${BUS_PORT}
     networks:
       - fullstack
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	shareddata "messaging/internal/data/shared"
 	messagehandlers "messaging/internal/handlers/message"
@@ -36,7 +37,8 @@ func main() {
 	getRouter := sm.Methods(http.MethodGet).Subrouter()
 	getRouter.HandleFunc("/message", mh.GetMessage)
 
-	s := mhttp.NewHTTPServer(sm, "1041")
+	fmt.Println("LISTENING ON PORT", os.Getenv("APP_PORT"))
+	s := mhttp.NewHTTPServer(sm, os.Getenv("APP_PORT"))
 
 	go func() {
 		err := s.ListenAndServe()
