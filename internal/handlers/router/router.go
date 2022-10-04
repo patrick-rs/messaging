@@ -20,14 +20,17 @@ func NewRouter(l *log.Logger) *Router {
 
 func (m *Router) ReverseProxy(rw http.ResponseWriter, r *http.Request) {
 	port := 0
+	host := ""
 	switch r.URL.Path {
 	case "/message":
 		port = 1041
+		host = "message"
 	case "/bus":
+		host = "bus"
 		port = 1042
 	}
 
-	target, err := url.Parse(fmt.Sprintf("http://localhost:%d", port))
+	target, err := url.Parse(fmt.Sprintf("http://%s:%d", host, port))
 
 	if err != nil {
 		m.l.Printf("Error parsing url, port: %d\n", port)

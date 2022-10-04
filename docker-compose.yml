@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  db:
+    image: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    networks:
+      - fullstack
+
+  bus:
+    image: messaging-bus
+    build:
+      dockerfile: ./docker/bus/Dockerfile
+    ports:
+      - "1042:1042"
+    depends_on:
+      - db
+    networks:
+      - fullstack
+
+  message:
+    image: messaging-message
+    build:
+      dockerfile: ./docker/message/Dockerfile
+    ports:
+      - "1041:1041"
+    depends_on:
+      - db
+    networks:
+      - fullstack
+
+  router:
+    image: messaging-router
+    build:
+      dockerfile: ./docker/router/Dockerfile
+    ports:
+      - "1040:1040"
+    depends_on:
+      - message
+      - bus
+    networks:
+      - fullstack
+
+networks:
+  fullstack:
+    driver: bridge

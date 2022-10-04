@@ -9,14 +9,13 @@ import (
 )
 
 const (
-	uri                 = "mongodb://localhost:27017"
 	DATABASE            = "messaging"
 	MESSAGES_COLLECTION = "messages"
 	BUSES_COLLECTION    = "buses"
 )
 
 func NewMongoDBClient() (*mongo.Client, error) {
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI("mongodb://localhost:27017"))
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI("mongodb://db:27017/"))
 	if err != nil {
 		return nil, err
 	}
