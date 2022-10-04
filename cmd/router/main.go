@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	routerhandlers "messaging/internal/handlers/router"
 	"net/http"
@@ -10,7 +9,6 @@ import (
 
 func main() {
 
-	fmt.Println("SDF")
 	l := log.New(os.Stdout, "messaging", log.LstdFlags)
 
 	rh := routerhandlers.NewRouter(l)
